@@ -6,4 +6,7 @@ ship is a 1x1 cell
 
 this program was successfully compiled in https://www.onlinegdb.com/online_c++_compiler
 the source code can be compiled in any C++ complier.
+
+source code is in text file format
+
 3/6/18
