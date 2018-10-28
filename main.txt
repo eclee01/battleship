@@ -1,0 +1,290 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+const int rows = 6, cols = 10;
+
+void displayField(string [][cols]);
+int inputRow();
+int inputColumn();
+
+int main ()
+{
+    int shipRow1, shipCol1,
+        shipRow2, shipCol2,
+        guessRow, guessCol,
+        tries = 0;
+    
+    bool playerwin = false,
+         compwin = false;
+    
+    string pause;
+    
+    //randomly hide computer ship
+    srand(time(0));
+    shipRow2 = rand() % rows + 1;
+    shipCol2 = rand() % cols + 1;
+    
+    //initialize field
+    string field[rows][cols];
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
+        {
+            field[r][c] = "[ ]";
+        }
+    }
+    
+    cout << "Battleship!\n\n";
+    cout << "I have hidden a ship in a 6x10 grid.\n";
+    cout << "Hide yours! Note: Our ships can't be on the same spot.";
+    cout << "\nGood luck!\n\n";
+    
+    //hiding ship
+    cout << "Hide your ship!\n";
+    shipRow1 = inputRow();
+    shipCol1 = inputColumn();
+    
+    //makes sure ships aren't in same spot
+    while (shipRow2 == shipRow1 && shipCol2 == shipCol1)
+    {
+        shipRow2 = rand() % rows + 1;
+        shipCol2 = rand() % cols + 1;
+    }
+    
+    //puts the player's ship on the field
+    field[shipRow1 - 1][shipCol1 - 1] = "[&]";
+    displayField(field);
+    
+    //begin game
+    while (playerwin == false && compwin == false)
+    {
+        //player guesses
+        cout << "Player's turn!\n";
+        guessRow = inputRow();
+        guessCol = inputColumn();
+        
+        //player hit or miss
+        if (guessRow == shipRow2 && guessCol == shipCol2)
+        {
+            field[shipRow2 - 1][shipCol2 - 1] = "[O]";
+            displayField(field);
+            playerwin = true;
+            break;
+        }
+        else
+        {
+            //player can't write over their ship
+            if (field[guessRow - 1][guessCol - 1] != "[&]")
+            {
+                field[guessRow - 1][guessCol - 1] = "[X]";
+            }
+            cout << "It's a miss!\n";
+        }
+        
+        //opportunity to quit
+        displayField(field);
+        cout << "Enter anything (but still something) to continue (enter quit to forfeit): ";
+        cin >> pause;
+        
+        if (pause == "quit")
+        {
+            break;
+        }
+        
+        cout << endl;
+        
+        //computer's turn
+        cout << "My turn!\n";
+        
+        if (tries > 4)
+        {
+            while (field[guessRow - 1][guessCol - 1] == "[*]"
+                   || field[guessRow - 1][guessCol - 1] == "[X]")
+            {
+                if (shipRow1 % 2 == 0)
+                {
+                    while (guessRow % 2 != 0)
+                    {
+                        guessRow = rand() % rows + 1;
+                    }
+                }
+                else
+                {
+                    while (guessRow % 2 == 0)
+                    {
+                        guessRow = rand() % rows + 1;
+                    }
+                }
+            
+                if (tries > 5)
+                {
+                    if (shipCol1 % 2 == 0)
+                    {
+                        while (guessCol % 2 != 0)
+                        {
+                            guessCol = rand() % cols + 1;
+                        }
+                    }
+                    else
+                    {
+                        while (guessCol % 2 == 0)
+                        {
+                            guessCol = rand() % cols + 1;
+                        }
+                    }
+                }
+                else
+                {
+                    guessCol = rand() % cols + 1;
+                }
+            }
+            
+        }
+        else
+        {
+            guessRow = rand() % rows + 1;
+            guessCol = rand() % cols + 1;
+            
+            while (field[guessRow - 1][guessCol - 1] == "[*]"
+                   || field[guessRow - 1][guessCol - 1] == "[X]")
+            {
+                guessRow = rand() % rows + 1;
+                guessCol = rand() % cols + 1;
+            }
+        }
+        
+        cout << "I guessed row " << guessRow;
+        cout << " and column " << guessCol <<".\n";
+        
+        //computer hit or miss
+        if (guessRow == shipRow1 && guessCol == shipCol1)
+        {
+            field[shipRow1 - 1][shipCol1 - 1] = "[#]";
+            field[shipRow2 - 1][shipCol2 - 1] = "[$]";
+            displayField(field);
+            compwin = true;
+            break;
+        }
+        else
+        {
+            field[guessRow - 1][guessCol - 1] = "[*]";
+            cout << "It's a miss!\n";
+        }
+        
+        displayField(field);
+        
+        //hint system
+        tries++;
+        
+        if (tries == 5)
+        {
+            if (shipRow2 % 2 == 0)
+            {
+                cout << "Hint: The ROW my ship is on is even.\n";
+            }
+            else
+            {
+                cout << "Hint: The ROW my ship is on is odd.\n";
+            }
+            
+            if (shipRow1 % 2 == 0)
+            {
+                cout << "Now I get to know that your ship's row is even,";
+                cout << " to make things even.\n";
+            }
+            else
+            {
+                cout << "Now I get to know that your ship's row is odd,";
+                cout << " to make things even.\n";
+            }
+        }
+        else if (tries == 6)
+        {
+            if (shipCol2 % 2 == 0)
+            {
+                cout << "Hint: The COLUMN my ship is on is even.\n";
+            }
+            else
+            {
+                cout << "Hint: The COLUMN my ship is on is odd.\n";
+            }
+            
+            if (shipCol1 % 2 == 0)
+            {
+                cout << "Now I get to know that your ship's column is even,";
+                cout << " to make things even.\n";
+            }
+            else
+            {
+                cout << "Now I get to know that your ship's column is odd,";
+                cout << " to make things even.\n";
+            }
+        }
+        
+    }
+    
+    //different displays for who won/a forfeit
+    if (playerwin == true)
+    {
+        cout << "You sunk my ship!\n";
+        cout << "Congratulations! You W I N !\n";
+    }
+    else if (compwin == true)
+    {
+        cout << "I sunk your ship!\n";
+        cout << "My ship was at row " << shipRow2;
+        cout << " and column " << shipCol2 << ".\n";
+        cout << "Sorry, you lose. :(\n";
+        
+        field[shipRow2 - 1][shipCol2 - 1] = "[$]";
+    }
+    else
+    {
+        cout << "My ship was at row " << shipRow2;
+        cout << " and column " << shipCol2 << ".\n";
+        field[shipRow2 - 1][shipCol2 - 1] = "[$]";
+        displayField(field);
+    }
+    
+    return 0;
+}
+
+void displayField(string array[][cols])
+{
+    cout << endl;
+    cout << "   1  2  3  4  5  6  7  8  9  10\n";
+    for (int r = 0; r < rows; r++)
+    {
+        cout << r + 1 << " ";
+        for (int c = 0; c < cols; c++)
+        {
+            cout << array[r][c];
+        }
+        cout << endl;
+    }
+    cout << "\nKey: [&] Player Ship / [X] Player Miss / [O] Player Hit";
+    cout << "\n     [$] Computer Ship / [*] Computer Miss / [#] Computer Hit\n\n";
+}
+
+int inputRow()
+{
+    int r = 0;
+    while (r < 1 || r > rows)
+    {
+        cout << "Enter row (1-" << rows << "): ";
+        cin >> r;
+    }
+    return r;
+}
+
+int inputColumn()
+{
+    int c = 0;
+    while (c < 1 || c > cols)
+    {
+        cout << "Enter column (1-" << cols << "): ";
+        cin >> c;
+    }
+    return c;
+}
